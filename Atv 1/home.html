@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            color: #007BFF;
+        }
+
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #text {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #000;
+        }
+</style>
+<body>
+    <div class="container">
+        <h1>Average Calculator</h1>
+        <input type="number" id="grade1" name="grade1" placeholder="Grade 1">
+        <input type="number" id="grade2" name="grade2" placeholder="Grade 2">
+        <input type="number" id="grade3" name="grade3" placeholder="Grade 3">
+        <button onclick="avgCalc()">Calculate Average</button>
+        <p id="text"></p>
+    </div>
+</body>
+</html>
+
+<script>
+    function avgCalc(){
+        var grade1 = parseFloat(document.getElementById('grade1').value);
+        var grade2 = parseFloat(document.getElementById('grade2').value);
+        var grade3 = parseFloat(document.getElementById('grade3').value);
+        const showAvg = document.getElementById('text').textContent;
+
+        fetch('/avgCalc', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ n1: grade1, n2: grade2, n3: grade3 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('text').textContent = `${data.avg}`;
+        })
+    }
+</script>
