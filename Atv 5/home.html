@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body, h1, p, button, input {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 400px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #4a90e2;
+    }
+
+    p {
+        margin-bottom: 20px;
+        font-size: 1rem;
+    }
+
+    .upload-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .file-input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .upload-btn {
+        padding: 10px 20px;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .upload-btn:hover {
+        background: #357ABD;
+    }
+
+    .result-text {
+        margin-top: 20px;
+        font-size: 1.1rem;
+        color: #000;
+    }
+
+    /* Responsive design */
+    @media (max-width: 480px) {
+        .container {
+            width: 90%;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+
+        .upload-btn {
+            font-size: 0.9rem;
+            padding: 8px 15px;
+        }
+    }
+</style>
+<body>
+    <div class="container">
+        <h1>Word Counter</h1>
+        <p>Upload a file to count the number of words.</p>
+        <div class="upload-section">
+            <input type="file" name="file" id="file" class="file-input">
+            <button onclick="wordCounter()" class="upload-btn">Count Words</button>
+        </div>
+        <p id="text" class="result-text"></p>
+    </div>
+</body>
+</html>
+
+<script>
+    function wordCounter(){
+        const fileInput = document.getElementById('file');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            document.getElementById('text').textContent = 'Please select a file first.';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/showCounting', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('text').textContent = data.msg;
+        })
+    }
+</script>
