@@ -6,6 +6,87 @@
     <title>Document</title>
 </head>
 <body>
+    <input type="text" name="taskField" id="taskField">
+    <button onclick="saveTask()">click</button>
     
+    <table border="1" >
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Task</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="dataTable"></tbody>
+    </table>
 </body>
 </html>
+
+<script>
+    function saveTask(){
+        const task = document.getElementById('taskField').value;
+
+        fetch('/createTask', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify({task: task})
+        })
+        .then(response => response.json())
+
+        fetchData();
+    }
+
+    function fetchData() {
+        fetch('/showTasks')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('dataTable');
+            tableBody.innerHTML = '';
+            data.forEach(row => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td contenteditable="false">${row.taskID}</td>
+                        <td contenteditable="true">${row.taskTask}</td>
+                        <td>
+                            <button onclick="deleteData(${row.taskID})">🗑️</button>
+                            <button onclick="updateData(${row.taskID})">✏️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        });
+    }
+
+    function deleteData(taskID) {
+            fetch(`/deleteTask/${taskID}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    fetchData();
+                });
+        }
+
+        
+        function updateData(taskID) {
+            const row = document.querySelector(`button[onclick="updateData(${taskID})"]`).parentNode.parentNode;
+            const id = row.cells[0].textContent;
+            const task = row.cells[1].textContent;
+
+            fetch(`/updateTask/${taskID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ task })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    fetchData();
+                });
+        }
+
+    fetchData();
+</script>
