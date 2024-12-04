@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    div {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+    }
+    
+    input[type="text"],
+    input[type="number"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        outline: none;
+        transition: border 0.3s ease;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        border-color: #4CAF50;
+    }
+    
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    
+    button:hover {
+        background-color: #45a049;
+        transform: scale(1.05);
+    }
+    
+    #contacts {
+        margin-top: 20px;
+        text-align: left;
+    }
+    
+    #contacts .contactDiv {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    #contacts .contactDiv:hover {
+        transform: scale(1.02);
+        background-color: #eaeaea;
+    }
+    
+    #contacts .contactDiv p {
+        margin: 0;
+        font-size: 14px;
+        color: #333;
+        flex: 1;
+        padding: 0 5px;
+    }
+    
+    #contacts .deletionBtnDiv button {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    
+    #contacts .deletionBtnDiv button:hover {
+        background-color: #e60000;
+        transform: scale(1.1);
+    }
+    </style>
+<body>
+    <div>
+        <input type="text" name="name" id="name">
+        <input type="number" name="phone" id="phone">
+        <button onclick="newContact()">click</button>
+        <p id="contacts"></p>
+    </div>
+</body>
+</html>
+
+<script>
+    window.onload = showContacts();
+
+    function newContact(){
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+
+        fetch('/addContact', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify({name: name, phone: phone})
+        })
+        .then(response => response.json())
+
+        showContacts();
+    }
+
+    function showContacts(){
+        fetch('/listContacts')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('contacts').innerHTML = '';
+            data.forEach(row => {
+                document.getElementById('contacts').innerHTML += `
+                    <div class="contactDiv">
+                        <p>${row.contactID}</p>
+                        <p>${row.contactName}</p>
+                        <p>${row.contactPhone}</p>
+
+                        <div class="deletionBtnDiv">
+                            <button onclick="deleteContact(${row.contactID})">🗑️</button>
+                        </div>
+                    </div>
+                ` 
+            })
+        })
+    }
+
+    function deleteContact(contactID){
+        fetch(`/deleteContact/${contactID}`, { 
+            method: 'Delete' 
+        })
+        .then(response => response.json())
+
+        showContacts();
+    }
+</script>
